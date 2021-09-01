@@ -45,13 +45,34 @@ function App() {
         date: Date.now()
       }
 
-      const data = await db.collection('task').add(newTask)
+      const data = await db.collection('task').add(newTask);
+
+      setTask([
+        ...task,
+        {...newTask, id: data.id}
+      ])
+
+      setTaskForm('');
 
     } catch (error) {
       console.log(error);
     }
 
     console.log(taskForm);
+  }
+
+  const deleteTask = async (idTask) => {
+    try {
+      
+      const db = firebase.firestore();
+      await db.collection('task').doc(idTask).delete();
+
+      const filterArray = task.filter(item => item.id !== idTask);
+      setTask(filterArray);
+
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   return (
@@ -65,6 +86,12 @@ function App() {
               task.map(item => (
                 <li className="list-group-item" key={item.id}>
                   {item.name}
+                  <button onClick={ () => deleteTask(item.id)} className="btn btn-danger btn-sm float-end ms-2">
+                    Delete
+                  </button>
+                  <button className="btn btn-warning btn-sm float-end">
+                    Edit
+                  </button>
                 </li>
               ))
             }
