@@ -1,4 +1,3 @@
-import { isTSEntityName } from '@babel/types';
 import { useEffect, useState } from 'react';
 import { firebase } from './firebase';
 
@@ -18,7 +17,7 @@ function App() {
         const db = firebase.firestore();
         const data = await db.collection('task').get()
         const dataArray = data.docs.map( (doc) => ({id: doc.id, ...doc.data() }));
-        console.log(dataArray);
+        /* console.log(dataArray); */
         setTask(dataArray);
 
       } catch (error) {
@@ -33,7 +32,7 @@ function App() {
 
   const addTask = async (e) => {
     e.preventDefault();
-    console.log(task);
+    /* console.log(task); */
 
     if(!taskForm.trim()){
       return console.log('Empty');
@@ -86,10 +85,32 @@ function App() {
   const editTask = async (e) => {
     e.preventDefault();
     
-    if(!tarea.trim()){
+    if(!taskForm.trim()){
       console.log('empty')
       return
     }
+
+    try {
+      
+      const db = firebase.firestore();
+      await db.collection('task').doc(id).update({
+        name: taskForm
+      });
+
+      const editedArray = task.map(item => (
+        item.id === id ? {id: item.id, date: item.date, name: taskForm} : item
+      ))
+
+      setTask(editedArray);
+      
+      setEditMode(false);
+      setTaskForm('');
+      setId('');
+
+    } catch (error) {
+      console.log(error);  
+    }
+
   }
 
   return (
