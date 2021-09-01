@@ -6,6 +6,8 @@ function App() {
 
   const [task, setTask] = useState([]);
   const [taskForm, setTaskForm] = useState('');
+  const [editMode, setEditMode] = useState(false);
+  const [id, setId] = useState('');
  
   useEffect(() => {
     
@@ -75,6 +77,21 @@ function App() {
     }
   }
 
+  const activateEditMode = (item) => {
+    setEditMode(true);
+    setTaskForm(item.name);
+    setId(item.id);
+  }
+
+  const editTask = async (e) => {
+    e.preventDefault();
+    
+    if(!tarea.trim()){
+      console.log('empty')
+      return
+    }
+  }
+
   return (
     <div className="container">
       <h1 className="text-center mt-1"> CRUD - REACTJS AND FIRESTORE</h1>
@@ -89,7 +106,7 @@ function App() {
                   <button onClick={ () => deleteTask(item.id)} className="btn btn-danger btn-sm float-end ms-2">
                     Delete
                   </button>
-                  <button className="btn btn-warning btn-sm float-end">
+                  <button onClick={ () => activateEditMode(item)} className="btn btn-warning btn-sm float-end">
                     Edit
                   </button>
                 </li>
@@ -98,11 +115,17 @@ function App() {
           </ul>
         </div>
         <div className="col-md-6">
-          <h3>Form</h3>
-          <form onSubmit={addTask}>
+          <h3 className="text-center">
+            {
+              editMode ? 'Edit Task' : 'Add Task'
+            }
+          </h3>
+          <form onSubmit={ editMode ? editTask : addTask }>
             <input onChange={e => setTaskForm(e.target.value)} value={taskForm} type="text" placeholder="Enter Task" className="form-control mb-2" />
-            <button className="btn btn-dark w-100" type="submit" >
-              Add Task
+            <button className={ editMode ? 'btn btn-warning w-100' : 'btn btn-dark w-100' } type="submit" >
+              {
+                editMode ? 'Edit' : 'Add'
+              }
             </button>
           </form>
         </div>
